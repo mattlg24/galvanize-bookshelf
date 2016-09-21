@@ -55,7 +55,26 @@ router.post('/', (req, res, next) => {
 })
 
 router.patch('/:id', (req, res, next) => {
-    knex('/:id')
+    const updateBook = {
+        title: req.body.title,
+        author: req.body.author,
+        genre: req.body.genre,
+        description: req.body.description,
+        cover_url: req.body.coverUrl,
+    }
+    knex('books')
+        .where('id', req.params.id)
+        .first()
+        .update(updateBook, '*')
+        .then((book) => {
+            if (!book) {
+                return next()
+            }
+            res.json(humps.camelizeKeys(book[0]))
+        })
+        .catch((err) => {
+            next(err)
+        })
 })
 
 router.delete('/:id', (req, res, next) => {

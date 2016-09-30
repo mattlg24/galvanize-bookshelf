@@ -9,7 +9,6 @@ const humps = require('humps')
 router.post('/', (req, res, next) => {
     bcrypt.hash(req.body.password, 12)
         .then((hashed_password) => {
-            // console.log(req.body.firstName, req.body.lastName, req.body.email, hashed_password)
             return knex('users')
                 .insert({
                     first_name: req.body.firstName,
@@ -21,6 +20,7 @@ router.post('/', (req, res, next) => {
         .then((users) => {
             const user = users[0]
             delete user.hashed_password
+            req.session.userId = user.id
             res.send(humps.camelizeKeys(user))
         })
         .catch((err) => {
